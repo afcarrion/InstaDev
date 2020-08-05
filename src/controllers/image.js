@@ -1,11 +1,16 @@
 const { randomName } = require('../helpers/libs');
 const { Image } = require('../models/index');
+const { Comment } = require('../models/index');
+const md5 = require('md5');
 const path = require('path');
 const fs = require('fs-extra');
 const ctrl = {};
 
-ctrl.index = (req, res) => {
-
+ctrl.index = async (req, res) => {
+    //console.log(req.params.image_id);
+    const image = await Image.findOne({filename: {$regex: req.params.image_id}});
+    //console.log(image);
+    res.render('images', { image });
 };
 
 ctrl.create = (req, res) => {
@@ -31,8 +36,8 @@ ctrl.create = (req, res) => {
                 });
                 const imageSave = await newImage.save();
                 console.log(newImage);
-               // res.redirect('/images');
-               res.send('Todo bien ');
+                res.redirect('/images/' + nameImage);
+               //res.send('Todo bien ');
             } else {
                 await fs.unlink(imageTempPath);
                 res.status(500).json({error: 'Only images'})
@@ -46,8 +51,17 @@ ctrl.like = (req, res) => {
     
 };
 
-ctrl.comment = (req, res) => {
-    
+ctrl.comment = async (req, res) => {
+    //console.log(req.body);
+    const image = await Image.findOne({filename: {$regex: req.params.image_id}});
+    if(image){
+        const newComment = new Comment(req.body);
+        newComment.gravatar = md5(newComment.email);
+        newComment.image_id = image._id;
+        console.log(newComment);
+        await newComment.save();
+        res.redirect(`/images/${image.uniqueId}`);
+    }
 };
 
 ctrl.delete = (req, res) => {
