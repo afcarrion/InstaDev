@@ -36,11 +36,18 @@
     <div class="card-body">
         <div class="row">
             {{#each images}}
-            <div class="col-md-4 text-center p-3">
-                <a href="/images/{{uniqueId}}">
-                    <img src="/public/upload/{{filename}}" class="w-100 h-100 img-thumbnail">
-                </a>
+            <div class="col-md-4 text-center pb-4 b-0 m-0">
+                <div class="card-body w-100 h-100 ">
+                    <a href="/images/{{uniqueId}}">
+                        <img src="/public/upload/{{filename}}" class="w-100 h-100 img-thumbnail">
+                    </a>
+                    <div class="card-footer d-flex  justify-content-around align-items-center p-1 b-0 m-0">
+                            <i class="fas fa-heart"></i>{{likes}}
+                            <i class="fas fa-eye"></i> {{views}}
+                    </div>
+                </div>
             </div>
+            
             {{/each}}
         </div>
     </div>
