@@ -36,7 +36,7 @@
         </button>
     </div>
     <div class="card-body">
-        <blockquote>
+        <blockquote id="formComment">
             <form action="/images/{{image.uniqueId}}/comment" method="POST">
                 <div class="form-group">
                     <input type="text" class="form-control" name="name" placeholder="Name">
@@ -54,5 +54,22 @@
                 </div>
             </form>
         </blockquote>
+        <ul class="list-group p-3">
+            {{#each comments}}
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            <img src="http://gravatar.com/avatar/{{gravatar}}?d=wavatar&s=45" alt="profile" class="w-50 img-thumbnail">
+                        </div>
+                        <blockquote class="col-md-10">
+                            <p class="lead">{{comment}}</p>
+                            <footer class="blockquote-footer">
+                                {{name}} - {{tiempoAtras timestamp}}
+                            </footer>
+                        </blockquote>
+                    </div>
+                </li>
+            {{/each}}
+        </ul>
     </div>
 </div>

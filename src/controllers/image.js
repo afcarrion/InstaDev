@@ -8,9 +8,21 @@ const ctrl = {};
 
 ctrl.index = async (req, res) => {
     //console.log(req.params.image_id);
+    const viewModel = {image: {}, comments: {}};
     const image = await Image.findOne({filename: {$regex: req.params.image_id}});
-    //console.log(image);
-    res.render('images', { image });
+    if(image){
+        //Incremetar vistas
+        image.views = image.views + 1;
+        await image.save();
+        //console.log(image);
+        viewModel.image = image;
+        const comments = await Comment.find({image_id: image._id});
+        viewModel.comments = comments;
+        //res.render('images', { image, comments: comments});
+        res.render('images', viewModel)
+    }else{
+        res.redirect('/');
+    }
 };
 
 ctrl.create = (req, res) => {
@@ -47,8 +59,15 @@ ctrl.create = (req, res) => {
     saveImage();
 };
 
-ctrl.like = (req, res) => {
-    
+ctrl.like = async (req, res) => {
+    const image = await Image.findOne({filename: {$regex: req.params.image_id}});
+    if(image){
+        image.likes = image.likes + 1;
+        await image.save();
+        res.json({likes: image.likes});
+    }else{
+        res.status(401).json({error: 'Not Found'});
+    }
 };
 
 ctrl.comment = async (req, res) => {
@@ -61,11 +80,22 @@ ctrl.comment = async (req, res) => {
         console.log(newComment);
         await newComment.save();
         res.redirect(`/images/${image.uniqueId}`);
+    }else{
+        res.redirect('/');
     }
 };
 
-ctrl.delete = (req, res) => {
-    
+ctrl.delete = async (req, res) => {
+    //console.log(req.params.image_id);
+    const image = await Image.findOne({filename: {$regex: req.params.image_id}});
+    if(image){
+        await fs.unlink(path.resolve('./src/public/upload/' + image.filename));
+        await Comment.deleteOne({image_id: image._id});
+        await image.remove();
+        res.json(true);
+
+    }
+
 };
 
 module.exports = ctrl;
